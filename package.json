@@ -1,0 +1,26 @@
+{
+  "name": "web-socket-chat",
+  "version": "1.0.0",
+  "description": "real time chat application built using websockets with priority based message alert system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YashUgale1983/web-socket-chat.git"
+  },
+  "author": "yashugale",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YashUgale1983/web-socket-chat/issues"
+  },
+  "homepage": "https://github.com/YashUgale1983/web-socket-chat#readme",
+  "dependencies": {
+    "typescript": "^5.3.3",
+    "websocket": "^1.0.34"
+  },
+  "devDependencies": {
+    "@types/websocket": "^1.0.10"
+  }
+}
