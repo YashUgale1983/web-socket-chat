@@ -1,7 +1,10 @@
+import { connection } from "websocket";
+import {OutgoingMessage} from "./messages/outgoingMessages";
 
-interface User{
+export interface User{
     name: string;
     id: string;
+    conn: connection
 }
 
 interface Room{
@@ -15,7 +18,7 @@ export class UserManager{
         this.rooms = new Map<string, Room>();
     }
 
-    addUser(name: string, userId: string, roomId: string, socket: WebSocket){
+    addUser(name: string, userId: string, roomId: string, socket: connection){
         if(! this.rooms.get(roomId)){
             this.rooms.set(roomId,{
                 users: []
@@ -24,7 +27,8 @@ export class UserManager{
 
         this.rooms.get(roomId)?.users.push({
             id: userId,
-            name
+            name,
+            conn: socket
         })
     }
 
@@ -33,5 +37,36 @@ export class UserManager{
         if(users){
             users.filter(({id})=> id !== userId)
         }
+    }
+
+    getUser(userId: string, roomId:string): User | null{
+        const users = this.rooms.get(roomId)?.users;
+        if(users){
+            const reqUser = users?.filter(({id})=> id===userId); // returns an array
+            return reqUser[0];
+        }
+
+        return null;
+
+        // alternate way -
+        // const user = this.rooms.get(roomId)?.users.find((({id})=>id===userId));
+        // return user ?? null ; 
+    }   
+
+    broadcast(roomId: string, userId: string, message: OutgoingMessage){
+        const user = this.getUser(userId, roomId);
+        if(!user){
+            console.log("User not found in DB");
+            return;
+        }
+        const room = this.rooms.get(roomId);
+        if(!room){
+            console.log("Room not found in DB");
+            return;
+        }
+
+        room.users.forEach(({conn})=>{
+            conn.sendUTF(JSON.stringify(message));
+        })
     }
 }
