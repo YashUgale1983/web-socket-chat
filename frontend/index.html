@@ -19,12 +19,32 @@
                     const {payload, type} = JSON.parse(event.data);
                     if(type === "ADD_CHAT"){
                         const textNode = document.createElement("p");
-                        textNode.innerHTML = payload.message + `(${payload.upvotes})`;
+                        textNode.innerHTML = payload.message;
+                        const buttonNode = document.createElement("button");
+                        buttonNode.innerHTML = `(${payload.upvotes})`;
+                        buttonNode.setAttribute("onclick", `sendUpvote(${payload.chatId})`);
+                        buttonNode.setAttribute("id", `message-${payload.chatId}`);
                         document.getElementById("messages").appendChild(textNode);
+                        document.getElementById("messages").appendChild(buttonNode );
+                    }
+                    if(type === "UPDATE_CHAT"){
+                        const buttonNode = document.getElementById(`message-${payload.chatId}`);
+                        buttonNode.innerHTML = `(${payload.upvotes})`;
                     }
                 }catch(err){
                     console.log(err);
                 }
+            }
+
+            function sendUpvote(chatId){
+                ws.send(JSON.stringify({
+                    type: "UPVOTE_MESSAGE",
+                    payload :{
+                        chatId,
+                        userId,
+                        roomId: "2"
+                    }
+                }))
             }
 
             function sendChat(){
@@ -42,8 +62,9 @@
         hello world
         <br>
         <input type="text" name="" id="inputText"></input>
+        <button onclick="sendChat()">Send chat</button>
+        <br><br>
         <div id="messages"></div>
         <br>
-        <button onclick="sendChat()">Send chat</button>
     </body>
 </head>
