@@ -2,24 +2,37 @@
     <body>
         <script>
             const ws = new WebSocket("ws://localhost:8080","echo-protocol");
+            let userId = Math.floor(Math.random()*10000);
             ws.onopen = function(){
                 alert("connected")
                 ws.send(JSON.stringify({
                     type: "JOIN_ROOM",
                     payload :{
                         name: "yash",
-                        userId: "1",
+                        userId,
                         roomId: "2"
                     }
                 }))
+            }  
+            ws.onmessage = function(event){
+                try{
+                    const {payload, type} = JSON.parse(event.data);
+                    if(type === "ADD_CHAT"){
+                        const textNode = document.createElement("p");
+                        textNode.innerHTML = payload.message + `(${payload.upvotes})`;
+                        document.getElementById("messages").appendChild(textNode);
+                    }
+                }catch(err){
+                    console.log(err);
+                }
             }
 
             function sendChat(){
                 ws.send(JSON.stringify({
                     type: "SEND_MESSAGE",
                     payload :{
-                        message: "hi there",
-                        userId: "1",
+                        message: document.getElementById("inputText").value,
+                        userId,
                         roomId: "2"
                     }
                 }))
@@ -28,7 +41,8 @@
 
         hello world
         <br>
-        <input type="text" name="" id="inputText">
+        <input type="text" name="" id="inputText"></input>
+        <div id="messages"></div>
         <br>
         <button onclick="sendChat()">Send chat</button>
     </body>

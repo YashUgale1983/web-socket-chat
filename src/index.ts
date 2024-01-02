@@ -46,10 +46,6 @@ wsServer.on('request', function(request: any) {
             }
         }
     });
-    connection.on('close', function(reasonCode: any, description: any) {
-        console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
-        console.log("Description : ", description);
-    });
 });
 
 
