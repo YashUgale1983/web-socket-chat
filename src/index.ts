@@ -3,7 +3,7 @@ import { IncomingMessage, SupportedMessage, UpvoteMessage } from "./messages/inc
 import { User, UserManager } from "./UserManager";
 import { InMemoryStore } from "./store/InMemoryStore";
 import {OutgoingMessage,SupportedMessage as OutgoingSupportedMessages} from "./messages/outgoingMessages";
-var http = require('http');
+import http from "http";
 
 const server = http.createServer(function(request: any, response: any) {
     console.log((new Date()) + ' Received request for ' + request.url);
@@ -16,16 +16,10 @@ server.listen(8080, function() {
 
 const wsServer = new WebSocketServer({
     httpServer: server,
-    // You should not use autoAcceptConnections for production
-    // applications, as it defeats all standard cross-origin protection
-    // facilities built into the protocol and the browser.  You should
-    // *always* verify the connection's origin and decide whether or not
-    // to accept it.
     autoAcceptConnections: false
 });
 
 function originIsAllowed(origin: any) {
-  // put logic here to detect whether the specified origin is allowed.
   return true;
 }
 
@@ -48,7 +42,7 @@ wsServer.on('request', function(request: any) {
             try{    
                 messageHandler(connection, JSON.parse(message.utf8Data));
             }catch(e){
-                
+                console.log(e);
             }
         }
     });
@@ -65,6 +59,7 @@ function messageHandler(ws: connection, message: IncomingMessage){
     // IF A USER WANTS TO JOIN A ROOM
     if(message.type == SupportedMessage.JoinRoom){
         const payload = message.payload;
+        console.log("user added");
         userManager.addUser(payload.name, payload.userId, payload.roomId, ws);
     }
 
@@ -89,7 +84,6 @@ function messageHandler(ws: connection, message: IncomingMessage){
             }
         }
         userManager.broadcast(payload.roomId, payload.userId, outgoingPayload);
-
     }
 
     // IF A USER WANTS TO UPVOTE A MESSAGE IN THE ROOM
